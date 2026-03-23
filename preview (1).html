@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Exam Countdown</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #020617, #0f172a);
+    color: #e2e8f0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 2.5rem;
+    color: #38bdf8;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    padding: 20px;
+}
+
+.card {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 20px;
+    transition: 0.3s;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative;
+}
+
+.card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+}
+
+.next {
+    border: 1px solid #22c55e;
+    box-shadow: 0 0 15px #22c55e55;
+}
+
+.updated {
+    border: 1px solid #ef4444;
+    box-shadow: 0 0 15px #ef444455;
+}
+
+.badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.next-badge {
+    background: #22c55e;
+    color: black;
+}
+
+.update-badge {
+    background: #ef4444;
+    color: white;
+    right: 70px;
+}
+
+.subject {
+    font-size: 18px;
+    font-weight: 600;
+    color: #facc15;
+}
+
+.date {
+    font-size: 13px;
+    margin-top: 5px;
+    color: #94a3b8;
+}
+
+.countdown {
+    margin-top: 15px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #38bdf8;
+}
+
+.done {
+    color: #22c55e;
+}
+</style>
+</head>
+
+<body>
+
+<h1>💀 Exam Countdown 💀</h1>
+
+<div class="container" id="examContainer"></div>
+
+<script>
+const exams = [
+    { subject: "Programming Practical", date: "2026-03-27T09:30:00" },
+    { subject: "English", date: "2026-03-30T13:00:00" },
+    { subject: "MIS", date: "2026-04-02T09:30:00" },
+    { subject: "Statistics", date: "2026-04-07T13:00:00" },
+    { subject: "Formal Methods", date: "2026-04-10T13:00:00" },
+    { subject: "Maths", date: "2026-04-20T13:00:00" },
+
+    { subject: "Systems Practical", date: "2026-04-23T09:30:00" },
+    { subject: "Computer Systems", date: "2026-04-24T09:30:00", updated: true },
+    { subject: "Programming", date: "2026-04-27T09:30:00", updated: true },
+    { subject: "Stats Practical", date: "2026-04-28T09:30:00", updated: true }
+];
+
+function updateCountdown() {
+    const container = document.getElementById("examContainer");
+    container.innerHTML = "";
+
+    let now = new Date();
+    let nextExamIndex = exams.findIndex(e => new Date(e.date) > now);
+
+    exams.forEach((exam, index) => {
+        let examDate = new Date(exam.date);
+        let diff = examDate - now;
+
+        let days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        let hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        let minutes = Math.floor((diff / (1000 * 60)) % 60);
+        let seconds = Math.floor((diff / 1000) % 60);
+
+        let card = document.createElement("div");
+        card.className = "card";
+
+        if(index === nextExamIndex) {
+            card.classList.add("next");
+        }
+
+        if(exam.updated) {
+            card.classList.add("updated");
+        }
+
+        let badges = "";
+        if(index === nextExamIndex) {
+            badges += `<div class="badge next-badge">NEXT</div>`;
+        }
+        if(exam.updated) {
+            badges += `<div class="badge update-badge">UPDATED</div>`;
+        }
+
+        if(diff <= 0) {
+            card.innerHTML = `
+                ${badges}
+                <div class="subject">${exam.subject}</div>
+                <div class="date">${examDate.toLocaleString()}</div>
+                <div class="countdown done">✔ Completed</div>
+            `;
+        } else {
+            card.innerHTML = `
+                ${badges}
+                <div class="subject">${exam.subject}</div>
+                <div class="date">${examDate.toLocaleString()}</div>
+                <div class="countdown">
+                    ${days}d ${hours}h ${minutes}m ${seconds}s
+                </div>
+            `;
+        }
+
+        container.appendChild(card);
+    });
+}
+
+setInterval(updateCountdown, 1000);
+</script>
+
+</body>
+</html>
